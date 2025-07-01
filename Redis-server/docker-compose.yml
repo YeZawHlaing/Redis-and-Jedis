@@ -1,0 +1,28 @@
+version: '3.8'
+
+services:
+  redis:
+    image: redis:latest
+    container_name: my-redis-cache
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes
+    restart: always
+
+  app:
+    build: .
+    container_name: spring-redis-app
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_PROFILES_ACTIVE: dockerfile
+      SPRING_DATA_REDIS_HOST: redis
+      SPRING_DATA_REDIS_PORT: 6379
+    depends_on:
+      - redis
+    restart: always
+
+volumes:
+  redis_data:
